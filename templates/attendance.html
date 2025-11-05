@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Điểm Danh</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Báo Cáo Điểm Danh</h1>
+            <a href="/" class="btn-back">← Về trang chủ</a>
+        </header>
+
+        <div class="date-selector">
+            <label for="date-input">Chọn ngày:</label>
+            <input type="date" id="date-input" value="{{ date }}">
+            <button class="btn-primary" onclick="loadAttendance()">Xem</button>
+        </div>
+
+        <div class="attendance-summary">
+            <h3>📋 Tổng quan ngày {{ date }}</h3>
+            <div class="summary-stats">
+                <div class="summary-item">
+                    <span class="label">Tổng số điểm danh:</span>
+                    <span class="value">{{ attendance_data|length }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Số học sinh có mặt:</span>
+                    <span class="value" id="unique-count">{{ attendance_data|length }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-table-container">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên học sinh</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                    {% if attendance_data %}
+                        {% for record in attendance_data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ record.name }}</td>
+                            <td>{{ record.time }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="empty-row">Không có dữ liệu điểm danh cho ngày này</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="export-section">
+            <button class="btn-secondary" onclick="exportCSV()">📥 Xuất file CSV</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function loadAttendance() {
+            const date = document.getElementById('date-input').value;
+            window.location.href = `/attendance?date=${date}`;
+        }
+
+        function exportCSV() {
+            const date = document.getElementById('date-input').value;
+            window.open(`/api/attendance?date=${date}`, '_blank');
+        }
+
+        // Calculate unique students
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('#attendance-tbody tr');
+            const names = new Set();
+            rows.forEach(row => {
+                const name = row.cells[1]?.textContent.trim();
+                if (name) names.add(name);
+            });
+            document.getElementById('unique-count').textContent = names.size;
+        });
+    </script>
+</body>
+</html>
+

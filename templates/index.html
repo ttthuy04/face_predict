@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Điểm Danh Khuôn Mặt</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Hệ Thống Điểm Danh Khuôn Mặt</h1>
+            <p class="subtitle">Hệ thống nhận diện và điểm danh tự động</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_students or 0 }}</h3>
+                    <p>Tổng số học sinh</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>{{ stats.present_today or 0 }}</h3>
+                    <p>Có mặt hôm nay</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <h3>{{ stats.attendance_files|length or 0 }}</h3>
+                    <p>Ngày có điểm danh</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-grid">
+            <a href="/realtime" class="action-card primary">
+                <div class="action-icon">📹</div>
+                <h2>Nhận Diện Thời Gian Thực</h2>
+                <p>Bắt đầu nhận diện khuôn mặt từ webcam</p>
+            </a>
+
+            <a href="/upload" class="action-card">
+                <div class="action-icon">📤</div>
+                <h2>Upload Ảnh Học Sinh</h2>
+                <p>Thêm ảnh học sinh vào hệ thống</p>
+            </a>
+
+            <a href="/attendance" class="action-card">
+                <div class="action-icon">📊</div>
+                <h2>Xem Báo Cáo Điểm Danh</h2>
+                <p>Xem chi tiết điểm danh theo ngày</p>
+            </a>
+        </div>
+
+        <div class="info-box">
+            <h3>📝 Hướng dẫn sử dụng:</h3>
+            <ol>
+                <li>Upload ảnh học sinh vào thư mục <code>dataset/</code> hoặc qua trang Upload</li>
+                <li>Chạy <code>python train.py</code> để train model (hoặc dùng nút Train trong Upload)</li>
+                <li>Vào trang "Nhận Diện Thời Gian Thực" để bắt đầu điểm danh</li>
+                <li>Xem báo cáo điểm danh tại trang "Xem Báo Cáo Điểm Danh"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

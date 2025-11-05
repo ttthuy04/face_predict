@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Ảnh Học Sinh</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📤 Upload Ảnh Học Sinh</h1>
+            <a href="/" class="btn-back">← Về trang chủ</a>
+        </header>
+
+        <div class="upload-section">
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="student_name">Tên học sinh:</label>
+                    <input type="text" id="student_name" name="student_name" required 
+                           placeholder="Nhập tên học sinh (ví dụ: Nguyen Van A)">
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Chọn ảnh:</label>
+                    <input type="file" id="file" name="file" accept="image/*" required>
+                    <small>Hỗ trợ: JPG, PNG (Tối đa 16MB)</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Upload Ảnh</button>
+                    <button type="button" class="btn-secondary" id="train-btn">Train Model</button>
+                </div>
+            </form>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Lưu ý:</h3>
+            <ul>
+                <li>Mỗi học sinh nên có từ 3-5 ảnh để độ chính xác cao nhất</li>
+                <li>Ảnh nên có khuôn mặt rõ ràng, ánh sáng tốt</li>
+                <li>Sau khi upload ảnh, nhấn "Train Model" để cập nhật hệ thống</li>
+                <li>Ảnh sẽ được lưu trong thư mục <code>dataset/[tên học sinh]/</code></li>
+            </ul>
+        </div>
+
+        <div class="students-list">
+            <h3>📁 Danh sách học sinh đã có:</h3>
+            <div id="students-grid" class="students-grid">
+                <p class="loading">Đang tải...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        const uploadForm = document.getElementById('upload-form');
+        const messageDiv = document.getElementById('message');
+        const trainBtn = document.getElementById('train-btn');
+        const studentsGrid = document.getElementById('students-grid');
+
+        // Handle form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(uploadForm);
+            
+            messageDiv.textContent = 'Đang upload...';
+            messageDiv.className = 'message info';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    uploadForm.reset();
+                    loadStudents();
+                } else {
+                    messageDiv.textContent = data.message || 'Có lỗi xảy ra';
+                    messageDiv.className = 'message error';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Lỗi kết nối: ' + error.message;
+                messageDiv.className = 'message error';
+            }
+        });
+
+        // Handle train button
+        trainBtn.addEventListener('click', async () => {
+            trainBtn.disabled = true;
+            trainBtn.textContent = 'Đang train...';
+            messageDiv.textContent = 'Đang train model, vui lòng đợi...';
+            messageDiv.className = 'message info';
+
+            try {
+                const response = await fetch('/train', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                } else {
+                    messageDiv.textContent = data.message || 'Có lỗi xảy ra';
+                    messageDiv.className = 'message error';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Lỗi: ' + error.message;
+                messageDiv.className = 'message error';
+            } finally {
+                trainBtn.disabled = false;
+                trainBtn.textContent = 'Train Model';
+            }
+        });
+
+        // Load students list
+        function loadStudents() {
+            // This would require a new API endpoint, for now just show placeholder
+            studentsGrid.innerHTML = '<p>Danh sách học sinh sẽ được hiển thị ở đây</p>';
+        }
+
+        loadStudents();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhận Diện Thời Gian Thực</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📹 Nhận Diện Thời Gian Thực</h1>
+            <a href="/" class="btn-back">← Về trang chủ</a>
+        </header>
+
+        <div class="video-container">
+            <div class="video-wrapper">
+                <img src="{{ url_for('video_feed') }}" alt="Video Feed" id="video-feed">
+            </div>
+            <div class="video-info">
+                <div class="info-item">
+                    <span class="label">Trạng thái:</span>
+                    <span class="value" id="status">Đang kết nối...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Hướng dẫn:</span>
+                    <span class="value">Nhìn thẳng vào camera để được nhận diện</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-log" id="attendance-log">
+            <h3>📋 Nhật ký điểm danh hôm nay</h3>
+            <div id="log-content">
+                <p class="empty-log">Chưa có điểm danh nào...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Refresh attendance log
+        function updateAttendanceLog() {
+            fetch('/api/attendance')
+                .then(response => response.json())
+                .then(data => {
+                    const logContent = document.getElementById('log-content');
+                    if (data.length === 0) {
+                        logContent.innerHTML = '<p class="empty-log">Chưa có điểm danh nào...</p>';
+                    } else {
+                        const uniqueStudents = [...new Set(data.map(item => item.name))];
+                        logContent.innerHTML = `
+                            <p><strong>${uniqueStudents.length} học sinh đã điểm danh:</strong></p>
+                            <ul>
+                                ${uniqueStudents.map(name => `<li>${name}</li>`).join('')}
+                            </ul>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update log every 5 seconds
+        setInterval(updateAttendanceLog, 5000);
+        updateAttendanceLog();
+
+        // Check video feed status
+        const videoFeed = document.getElementById('video-feed');
+        videoFeed.onload = () => {
+            document.getElementById('status').textContent = 'Đã kết nối';
+            document.getElementById('status').style.color = '#4CAF50';
+        };
+        videoFeed.onerror = () => {
+            document.getElementById('status').textContent = 'Lỗi kết nối camera';
+            document.getElementById('status').style.color = '#f44336';
+        };
+    </script>
+</body>
+</html>
