@@ -132,11 +132,13 @@ face_predict/
 #### Cách 2: Thủ Công
 
 1. Tạo thư mục trong `dataset/` với tên học sinh:
+
    ```powershell
    mkdir dataset\NguyenVanA
    ```
 
 2. Đặt ảnh vào thư mục đó (JPG, PNG):
+
    ```
    dataset/
    └── NguyenVanA/
@@ -161,6 +163,7 @@ python app.py
 ```
 
 Bạn sẽ thấy output:
+
 ```
  * Running on http://0.0.0.0:5000
  * Debug mode: ON
@@ -171,16 +174,19 @@ Bạn sẽ thấy output:
 Mở trình duyệt và truy cập: **http://localhost:5000**
 
 #### Trang Chủ (`/`)
+
 - Xem thống kê tổng quan
 - Truy cập các tính năng chính
 
 #### Nhận Diện Thời Gian Thực (`/realtime`)
+
 1. Click vào "Nhận Diện Thời Gian Thực"
 2. Cho phép trình duyệt truy cập webcam
 3. Nhìn thẳng vào camera
 4. Hệ thống sẽ tự động nhận diện và điểm danh
 
 #### Upload Ảnh (`/upload`)
+
 1. Nhập tên học sinh
 2. Chọn file ảnh
 3. Click "Upload Ảnh"
@@ -188,6 +194,7 @@ Mở trình duyệt và truy cập: **http://localhost:5000**
 5. Click "Train Model" để cập nhật
 
 #### Báo Cáo Điểm Danh (`/attendance`)
+
 1. Chọn ngày cần xem
 2. Xem danh sách học sinh đã điểm danh
 3. Xuất CSV nếu cần
@@ -223,6 +230,7 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ## 📊 API Endpoints
 
 ### Web Routes
+
 - `GET /` - Trang chủ
 - `GET /realtime` - Nhận diện thời gian thực
 - `GET /upload` - Trang upload ảnh
@@ -230,6 +238,7 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 - `GET /video_feed` - Video stream từ webcam
 
 ### API Routes
+
 - `POST /upload` - Upload ảnh học sinh
 - `POST /train` - Train model từ dataset
 - `GET /api/attendance?date=YYYY-MM-DD` - Lấy dữ liệu điểm danh (JSON)
@@ -240,6 +249,7 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ### Lỗi: "No module named 'dlib'"
 
 **Giải pháp:**
+
 ```powershell
 pip install dlib-bin==19.24.2.post1
 ```
@@ -249,6 +259,7 @@ Xem file `HUONG_DAN_CAI_DLIB.md` để biết chi tiết.
 ### Lỗi: "Could not load encodings"
 
 **Giải pháp:**
+
 1. Đảm bảo đã có ảnh trong thư mục `dataset/`
 2. Chạy `python train.py` để tạo file encodings
 3. Kiểm tra file `encodings/known_faces.pkl` đã tồn tại
@@ -256,6 +267,7 @@ Xem file `HUONG_DAN_CAI_DLIB.md` để biết chi tiết.
 ### Lỗi: Camera không hoạt động
 
 **Giải pháp:**
+
 1. Kiểm tra webcam đã được kết nối
 2. Đảm bảo không có ứng dụng khác đang dùng camera
 3. Cho phép trình duyệt truy cập camera
@@ -264,16 +276,10 @@ Xem file `HUONG_DAN_CAI_DLIB.md` để biết chi tiết.
    camera = cv2.VideoCapture(1)  # Thử 0, 1, 2...
    ```
 
-### Lỗi: "No trained faces"
-
-**Giải pháp:**
-1. Upload ít nhất 1 ảnh học sinh
-2. Chạy train model: `python train.py` hoặc dùng nút Train trên web
-3. Refresh trang web
-
 ### Performance chậm
 
 **Tối ưu:**
+
 1. Giảm độ phân giải camera trong code
 2. Sử dụng model "hog" thay vì "cnn" (đã được cấu hình)
 3. Giảm số lượng ảnh train (3-5 ảnh mỗi người là đủ)
@@ -284,29 +290,3 @@ Xem file `HUONG_DAN_CAI_DLIB.md` để biết chi tiết.
 - **Privacy**: Đảm bảo có sự đồng ý khi sử dụng ảnh và dữ liệu cá nhân
 - **Accuracy**: Độ chính xác phụ thuộc vào chất lượng ảnh và điều kiện ánh sáng
 - **Storage**: File CSV điểm danh được lưu trong thư mục `attendance/`
-
-## 🔄 Cập Nhật
-
-### Thêm học sinh mới:
-1. Upload ảnh qua web hoặc copy vào `dataset/`
-2. Chạy `python train.py` hoặc dùng nút Train trên web
-3. Refresh ứng dụng
-
-### Xóa học sinh:
-1. Xóa thư mục trong `dataset/`
-2. Chạy lại `python train.py`
-
-## 📞 Hỗ Trợ
-
-Nếu gặp vấn đề:
-1. Kiểm tra file `HUONG_DAN_CAI_DLIB.md` cho lỗi về dlib
-2. Xem log trong terminal khi chạy `python app.py`
-3. Kiểm tra các file trong thư mục `attendance/` và `encodings/`
-
-## 📄 License
-
-Dự án này sử dụng các thư viện mã nguồn mở. Vui lòng xem requirements.txt để biết chi tiết.
-
----
-
-**Chúc bạn sử dụng thành công! 🎉**
